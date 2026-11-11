@@ -10,5 +10,7 @@ export function GET() {
     name: store.name,
     paypal: mandate.paypal,
     orders_url: `${storeUrl()}/api/orders`,
+    // Where shopping agents can read the catalogue as JSON.
+    catalog_url: `${storeUrl()}/api/products`,
   });
 }

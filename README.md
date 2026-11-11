@@ -7,7 +7,7 @@ A demo online shop that takes orders from AI shopping agents through the [Mandat
 | Path | What it is |
 |---|---|
 | `/` and `/products/<sku>` | The shop. Each product page carries schema.org Product data, which the gateway reads for the name, category and price. |
-| `/.well-known/mandate-merchant.json` | What the shop publishes to join a gateway: its ownership token, its name, its PayPal payee and where to send paid orders. |
+| `/.well-known/mandate-merchant.json` | What the shop publishes to join a gateway: its ownership token, its name, its PayPal payee, where to send paid orders and where its catalogue is. |
 | `/api/orders` | Where the gateway sends the signed record of a paid order. The shop accepts it only if the gateway's signature verifies. |
 | `/mcp` | The catalogue as an MCP server for shopping agents (`search_products`, `get_product`). |
 | `/api/products` | The same catalogue as JSON. |
