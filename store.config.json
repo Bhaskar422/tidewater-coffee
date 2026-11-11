@@ -1,0 +1,108 @@
+{
+  "name": "Tidewater Coffee Roasters",
+  "short": "Tidewater",
+  "tagline": "Small-batch coffee, roasted on the coast.",
+  "mark": "T",
+  "heroEyebrow": "Roasted every Tuesday",
+  "heroTitle": "Coffee worth waking up for.",
+  "heroBody": "We roast in small batches by the harbour and ship within two days of roasting. Beans, and the few tools we would use to brew them.",
+  "heroPhoto": "1524350876685-274059332603",
+  "heroAlt": "Roasted coffee beans in a burlap sack",
+  "gridTitle": "Beans and brewing",
+  "perks": [
+    {
+      "title": "Roasted to order",
+      "body": "Shipped within two days of roasting."
+    },
+    {
+      "title": "Free shipping over $40",
+      "body": "Flat $5 below that."
+    },
+    {
+      "title": "Brew help included",
+      "body": "Every bag comes with a recipe card."
+    }
+  ],
+  "shipping": "Ships within two days of roasting · Free shipping over $40",
+  "closing": {
+    "title": "New to brewing at home?",
+    "body": "Start with the Harbor House Blend and the French press. It is the most forgiving way to make a good cup, and it needs no paper filters."
+  },
+  "products": [
+    {
+      "sku": "TW-HOUSE",
+      "name": "Harbor House Blend Whole Bean Coffee, 340 g",
+      "priceCents": 1800,
+      "category": "Coffee beans",
+      "photo": "1559056199-641a0ac8b55e",
+      "badge": "Bestseller",
+      "blurb": "Chocolate, toasted almond, a clean finish.",
+      "description": "Our everyday whole bean coffee: a medium roast of Colombian and Brazilian beans with notes of chocolate and toasted almond. 340 g bag.",
+      "features": [
+        "Medium roast, whole bean",
+        "340 g resealable bag",
+        "Good as filter or espresso"
+      ]
+    },
+    {
+      "sku": "TW-GUJI",
+      "name": "Ethiopia Guji Single Origin Coffee, 340 g",
+      "priceCents": 2200,
+      "category": "Coffee beans",
+      "photo": "1642437271884-fe1d3393eef9",
+      "badge": "Single origin",
+      "blurb": "Light roast with blueberry and jasmine.",
+      "description": "A light-roast single origin whole bean coffee from Guji, Ethiopia, with notes of blueberry and jasmine. 340 g kraft bag.",
+      "features": [
+        "Light roast, whole bean",
+        "Naturally processed",
+        "Best as pour-over"
+      ]
+    },
+    {
+      "sku": "TW-POUR",
+      "name": "Glass Pour-Over Coffee Brewer, 6 Cup",
+      "priceCents": 4600,
+      "category": "Coffee equipment",
+      "photo": "1541469406036-71229832e06e",
+      "badge": null,
+      "blurb": "Hourglass brewer with a wooden collar.",
+      "description": "A six-cup glass pour-over coffee brewer with a wooden collar and leather tie. Uses bonded paper filters for a clean cup.",
+      "features": [
+        "Borosilicate glass",
+        "Brews up to six cups",
+        "Wooden collar stays cool"
+      ]
+    },
+    {
+      "sku": "TW-PRESS",
+      "name": "Glass French Press, 1 Litre",
+      "priceCents": 3400,
+      "category": "Coffee equipment",
+      "photo": "1708127368781-cd5f069a90a5",
+      "badge": null,
+      "blurb": "Full-bodied coffee, no paper filters.",
+      "description": "A one-litre glass French press with a stainless steel plunger and fine mesh filter. Makes four mugs of full-bodied coffee.",
+      "features": [
+        "1 litre, about four mugs",
+        "Stainless steel mesh filter",
+        "Dishwasher-safe beaker"
+      ]
+    },
+    {
+      "sku": "TW-CUP",
+      "name": "Speckled Stoneware Coffee Cup, 300 ml",
+      "priceCents": 1600,
+      "category": "Drinkware",
+      "photo": "1666445844615-0a3930270f13",
+      "badge": null,
+      "blurb": "Hand-thrown, no handle, warm in the hand.",
+      "description": "A hand-thrown speckled stoneware coffee cup without a handle. Holds 300 ml. Each one is slightly different.",
+      "features": [
+        "Hand-thrown stoneware",
+        "300 ml",
+        "Dishwasher safe"
+      ]
+    }
+  ]
+}
