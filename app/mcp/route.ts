@@ -1,5 +1,6 @@
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
+import { presentToStore } from "@/lib/gateway";
 import { store, storeUrl, type Product } from "@/lib/store";
 
 // This store's catalogue for shopping agents. An agent finds a product here, then asks the Mandate gateway to buy it.
@@ -16,6 +17,16 @@ const handler = createMcpHandler((server) => {
     });
   server.registerTool("get_product", { title: "Get a product", description: `Full details for one ${store.name} product.`, inputSchema: z.object({ sku: z.string() }) },
     async ({ sku }) => { const p = store.products.find((x) => x.sku === sku); return out(p ? view(p) : { error: "No such product" }); });
-}, { serverInfo: { name: "tidewater-coffee", version: "1.0.0" } });
+  // The store checks the credential by itself, against the gateway key it holds. It does not call the gateway.
+  server.registerTool("present_mandate", { title: "Show this store a mandate credential",
+    description: `Show ${store.name} the credential the Mandate gateway issued for it (get_credential with store_url "${storeUrl()}"). The store verifies the signature, expiry and audience offline, then says whether it is covered by the mandate, which of its products fit the categories and limits, and which would need the buyer's approval. This is the store's reading and authorises nothing: the gateway still decides every purchase.`,
+    inputSchema: z.object({ credential: z.union([z.string(), z.record(z.string(), z.unknown())]).describe("The credential exactly as the gateway issued it: { payload, signature }, as an object or as JSON text") }) },
+    async ({ credential }) => {
+      let c: unknown = credential;
+      if (typeof c === "string") { try { c = JSON.parse(c); } catch { c = null; } }
+      try { return out((await presentToStore(c)).body); }
+      catch { return out({ accepted: false, code: "unavailable", reason: "This store could not read the gateway's public key. Try again shortly." }); }
+    });
+}, { serverInfo: { name: "tidewater-coffee", version: "1.1.0" } });
 
 export { handler as GET, handler as POST, handler as DELETE };
