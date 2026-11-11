@@ -29,6 +29,18 @@ If the credential holds, the shop answers with its own reading: whether the mand
 
 `mandate.json` also names the PayPal account to pay (`paypal.merchant_id` or `paypal.email`). This demo uses a PayPal sandbox business account.
 
+## Signing requests to the gateway
+
+Optional. With `STORE_SIGNING_KEY` set (an Ed25519 private key, as the base64 of its PKCS8 PEM), the shop publishes the matching public key as `signing_key` in `/.well-known/mandate-merchant.json` and signs every call it makes to the gateway through `gatewayFetch` in [`lib/gateway.ts`](lib/gateway.ts). Once the gateway has read the key (**Check the file now** in the merchant portal, after the redeploy), it refuses requests in this shop's name that are not signed with it. With the variable unset, nothing changes. The scheme is in [`lib/sign-request.ts`](lib/sign-request.ts): an Ed25519 signature over the method, path, SHA-256 of the body, timestamp and a one-time request id, sent as `Mandate-Store-Signature`, `Mandate-Store-Timestamp` and `Mandate-Store-Request-Id`.
+
+This generates a key and stores it on Vercel without showing it:
+
+```bash
+node -e 'process.stdout.write(Buffer.from(require("crypto").generateKeyPairSync("ed25519").privateKey.export({type:"pkcs8",format:"pem"})).toString("base64"))' | vercel env add STORE_SIGNING_KEY production
+```
+
+Keep the key once it is published: replacing or removing it makes the gateway withdraw the shop's verified status until its operator has reviewed the shop again.
+
 ## Limits
 
 - No order book: a paid order is verified and logged, not stored.

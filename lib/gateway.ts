@@ -1,7 +1,36 @@
 // What this store trusts about the gateway: its signature, and nothing else.
-import { createHash, createPublicKey, verify } from "node:crypto";
+import { createHash, createPrivateKey, createPublicKey, verify, type KeyObject } from "node:crypto";
 import { presentMandate } from "./mandate";
+import { publicPemOf, signRequest } from "./sign-request";
 import { gatewayUrl, store, storeUrl } from "./store";
+
+/**
+ * This store's own signing key, if it has one: STORE_SIGNING_KEY holds an Ed25519 private key, as the base64 of its
+ * PKCS8 PEM. With it set, the store publishes the public half as "signing_key" in its well-known file and signs every
+ * request it makes to the gateway, and the gateway then refuses requests in this store's name that are not signed.
+ * With it unset the store publishes no key and sends its requests unsigned.
+ */
+function storeSigningKey(): KeyObject | null {
+  const raw = process.env.STORE_SIGNING_KEY?.trim();
+  if (!raw) return null;
+  try {
+    const key = createPrivateKey(Buffer.from(raw, "base64").toString("utf8"));
+    if (key.asymmetricKeyType !== "ed25519") throw new Error("not Ed25519");
+    return key;
+  } catch { throw new Error("STORE_SIGNING_KEY is set but is not an Ed25519 private key (base64 of a PKCS8 PEM)"); }
+}
+/** The public key to publish as "signing_key" (SPKI PEM), or null when the store has no signing key. */
+export const signingPublicKey = () => { const key = storeSigningKey(); return key ? publicPemOf(key) : null; };
+
+/**
+ * Call the gateway as this store. `path` starts with "/" and includes any query string; a body must be the exact
+ * text that is sent, because the signature covers its hash. The scheme is in ./sign-request.ts.
+ */
+export function gatewayFetch(path: string, init: { method?: string; body?: string; headers?: Record<string, string>; signal?: AbortSignal } = {}) {
+  const key = storeSigningKey(), method = init.method ?? "GET";
+  return fetch(`${gatewayUrl()}${path}`, { ...init, method, cache: "no-store",
+    headers: { ...(init.body ? { "Content-Type": "application/json" } : {}), ...init.headers, ...(key ? signRequest(key, { method, path, body: init.body }) : {}) } });
+}
 
 export type LedgerEntry = { seq: number; userId: string; purchaseId: string | null; type: string; payload: Record<string, unknown>; at: string; prevHash: string; hash: string; signature: string };
 
