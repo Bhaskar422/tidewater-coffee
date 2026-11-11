@@ -1,8 +1,7 @@
 {
   "mandate_verification": "mandate-verify--sDOhyEWc7YjThO2feCplwyd",
-  "name": "Your store's name",
   "paypal": {
-    "email": "payments@your-store.example"
+    "merchant_id": "RLHCJKJQ5DBZJ"
   },
   "orders_url": "https://tidewater-coffee-pi.vercel.app/api/orders",
   "returns_url": "https://tidewater-coffee-pi.vercel.app/api/returns"

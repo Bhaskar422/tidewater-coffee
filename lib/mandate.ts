@@ -19,6 +19,8 @@ export type CredentialMandate = {
 export type CredentialPayload = {
   type: typeof CREDENTIAL_TYPE; version: number; id: string; issuer: string; agent: { id: string }; audience: string | null;
   issuedAt: string; expiresAt: string; mandates: CredentialMandate[]; neverBuy: string[]; note?: string;
+  /** The gateway's own, signed statement of where the audience store stands with it. Present when the credential is bound to a store. */
+  store?: { registered: boolean; verified: boolean };
 };
 export type SignedCredential = { payload: CredentialPayload; signature: string; algorithm?: string };
 
@@ -59,6 +61,10 @@ export function payloadProblem(p: unknown): string | null {
   if (Number.isNaN(time(o.issuedAt))) return "issuedAt is missing or not a date";
   if (Number.isNaN(time(o.expiresAt))) return "expiresAt is missing or not a date";
   if (!strs(o.neverBuy)) return "neverBuy must be a list";
+  if (o.store !== undefined) {
+    const st = o.store as Record<string, unknown> | null;
+    if (!st || typeof st !== "object" || typeof st.registered !== "boolean" || typeof st.verified !== "boolean") return "store must say registered and verified";
+  }
   if (!Array.isArray(o.mandates) || !o.mandates.length) return "mandates is missing or empty";
   for (const [i, raw] of o.mandates.entries()) {
     const m = (raw ?? {}) as Record<string, unknown>, at = `mandates[${i}]`;
@@ -122,10 +128,17 @@ const words = (t: string) => t.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean)
 const categoryFits = (allowed: string, category: string) => { const a = words(allowed), c = new Set(words(category)); return a.length > 0 && a.every((w) => c.has(w)); };
 const money = (c: number, currency: string) => { try { return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(c / 100); } catch { return `${(c / 100).toFixed(2)} ${currency}`; } };
 
-function storeCovered(s: StoreView, m: CredentialMandate, neverBuy: string[]): { covered: Covered; why: string } {
+function storeCovered(s: StoreView, m: CredentialMandate, neverBuy: string[], standing?: CredentialPayload["store"]): { covered: Covered; why: string } {
   if (named(s, neverBuy)) return { covered: "no", why: "The buyer's never-buy list names this store." };
   if (m.merchantPolicy === "allowlist")
     return named(s, m.allowedMerchants) ? { covered: "yes", why: "The mandate names this store." } : { covered: "no", why: "The mandate names its stores, and this store is not one of them." };
+  // The gateway's signed word on this store, when the credential carries it, outranks what the store believes about itself.
+  if (standing) {
+    if (!standing.registered) return { covered: "no", why: "The gateway says, in this credential, that this store is not registered with it yet." };
+    if (m.merchantPolicy === "any_registered") return { covered: "yes", why: "The mandate accepts any store registered with the gateway, and the gateway says in this credential that this store is." };
+    return standing.verified ? { covered: "yes", why: "The mandate accepts verified stores only, and the gateway says in this credential that it has verified this store." }
+      : { covered: "no", why: "The mandate accepts verified stores only, and the gateway says in this credential that it has not verified this store." };
+  }
   if (m.merchantPolicy === "any_registered") return { covered: "yes", why: "The mandate accepts any store registered with the gateway." };
   if (s.verified === true) return { covered: "yes", why: "The mandate accepts verified stores only. This store's own records say the gateway has verified it." };
   if (s.verified === false) return { covered: "no", why: "The mandate accepts verified stores only. This store's own records say the gateway has not verified it." };
@@ -149,7 +162,7 @@ const RANK = { inside: 0, needs_approval: 1, outside: 2 } as const;
 
 /** What a store tells an agent that showed a credential which verified: whether the store is covered, and which products fit. */
 export function readMandate(p: CredentialPayload, s: StoreView, now = Date.now()) {
-  const each = p.mandates.map((m) => ({ m, ...storeCovered(s, m, p.neverBuy) }));
+  const each = p.mandates.map((m) => ({ m, ...storeCovered(s, m, p.neverBuy, p.store) }));
   const open = each.filter((x) => x.covered !== "no");
   const covered: Covered = each.some((x) => x.covered === "yes") ? "yes" : open.length ? "unknown" : "no";
   const why = (each.find((x) => x.covered === covered) ?? each[0]).why;
