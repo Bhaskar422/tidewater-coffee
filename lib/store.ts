@@ -8,7 +8,7 @@ export const getProduct = (sku: string) => store.products.find((p) => p.sku === 
 export const storeUrl = () =>
   (process.env.STORE_URL ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000")).replace(/\/$/, "");
 /** The Mandate gateway this store accepts agent orders from. */
-export const gatewayUrl = () => (process.env.GATEWAY_URL ?? "https://mandate-gateway.vercel.app").replace(/\/$/, "");
+export const gatewayUrl = () => (process.env.GATEWAY_URL ?? "https://mandate.mindgears.dev").replace(/\/$/, "");
 
 export const money = (cents: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
 /** A cropped product photo, served by Unsplash under the Unsplash licence. */

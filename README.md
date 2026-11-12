@@ -1,6 +1,6 @@
 # Tidewater Coffee Roasters
 
-A demo online shop that takes orders from AI shopping agents through the [Mandate gateway](https://mandate-gateway.vercel.app). It is a separate site from the gateway, with its own repository and deployment, so it joins the gateway the way any outside merchant would. Nothing here is really for sale.
+A demo online shop that takes orders from AI shopping agents through the [Mandate gateway](https://mandate.mindgears.dev). It is a separate site from the gateway, with its own repository and deployment, so it joins the gateway the way any outside merchant would. Nothing here is really for sale.
 
 ## What it serves
 
@@ -56,6 +56,6 @@ pnpm install
 pnpm dev
 ```
 
-`GATEWAY_URL` chooses the gateway whose signatures the shop trusts (default `https://mandate-gateway.vercel.app`). `STORE_URL` sets the shop's public address when it is not on Vercel.
+`GATEWAY_URL` chooses the gateway whose signatures the shop trusts (default `https://mandate.mindgears.dev`). `STORE_URL` sets the shop's public address when it is not on Vercel.
 
 MIT licensed.
